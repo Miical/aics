@@ -1,6 +1,7 @@
 *.npy
 core.*
 *.zip
+imagenet-vgg-verydeep-19.mat
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
