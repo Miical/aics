@@ -1,4 +1,4 @@
-# -*- coding: UTF-8 -*- 
+# -*- coding: UTF-8 -*-
 import pycnnl
 import time
 import numpy as np
@@ -8,32 +8,32 @@ import scipy.io
 class VGG19(object):
     def __init__(self):
         # set up net
-        
+
         self.net = pycnnl.CnnlNet()
         self.input_quant_params = []
         self.filter_quant_params = []
 
-   
+
     def build_model(self, param_path='../../imagenet-vgg-verydeep-19.mat'):
         self.param_path = param_path
 
-       
+
         # TODO: 使用net的createXXXLayer接口搭建VGG19网络
         # creating layers
         self.net.setInputShape(1, 3, 224, 224)
         # conv1_1
-       
+
         input_shape1=pycnnl.IntVector(4)
         input_shape1[0]=1
         input_shape1[1]=3
         input_shape1[2]=224
         input_shape1[3]=224
         self.net.createConvLayer('conv1_1', input_shape1,64, 3, 1, 1, 1)
-             
+
         # relu1_1
         self.net.createReLuLayer('relu1_1')
         # conv1_2
-        
+
         input_shape12=pycnnl.IntVector(4)
         input_shape12[0]=1
         input_shape12[1]=64
@@ -41,13 +41,238 @@ class VGG19(object):
         input_shape12[3]=224
 
         self.net.createConvLayer('conv1_2',input_shape12, 64, 3, 1, 1, 1)
-        
+
         # relu1_2
         self.net.createReLuLayer('relu1_2')
-        
-        __________________________________
+
+        # pool1
+        input_shape1_pool=pycnnl.IntVector(4)
+        input_shape1_pool[0]=1
+        input_shape1_pool[1]=64
+        input_shape1_pool[2]=224
+        input_shape1_pool[3]=224
+        self.net.createPoolingLayer('pool1', input_shape1_pool, 2, 2)
+        # conv2_1
+
+        input_shape2=pycnnl.IntVector(4)
+        input_shape2[0]=1
+        input_shape2[1]=64
+        input_shape2[2]=112
+        input_shape2[3]=112
+        self.net.createConvLayer('conv2_1',input_shape2, 128, 3, 1, 1, 1)
+        # relu2_1
+        self.net.createReLuLayer('relu2_1')
+        # conv2_2
+        input_shape22=pycnnl.IntVector(4)
+        input_shape22[0]=1
+        input_shape22[1]=128
+        input_shape22[2]=112
+        input_shape22[3]=112
+        self.net.createConvLayer('conv2_2',input_shape22, 128, 3, 1, 1, 1)
+        # relu2_2
+        self.net.createReLuLayer('relu2_2')
+        # pool2
+        input_shape2_pool=pycnnl.IntVector(4)
+        input_shape2_pool[0]=1
+        input_shape2_pool[1]=128
+        input_shape2_pool[2]=112
+        input_shape2_pool[3]=112
+        self.net.createPoolingLayer('pool2', input_shape2_pool, 2, 2)
+        # conv3_1
+        input_shape3=pycnnl.IntVector(4)
+        input_shape3[0]=1
+        input_shape3[1]=128
+        input_shape3[2]=56
+        input_shape3[3]=56
+        self.net.createConvLayer('conv3_1',input_shape3, 256, 3, 1, 1, 1)
+        # relu3_1
+        self.net.createReLuLayer('relu3_1')
+        # conv3_2
+        input_shape32=pycnnl.IntVector(4)
+        input_shape32[0]=1
+        input_shape32[1]=256
+        input_shape32[2]=56
+        input_shape32[3]=56
+        self.net.createConvLayer('conv3_2',input_shape32, 256, 3, 1, 1, 1)
+        # relu3_2
+        self.net.createReLuLayer('relu3_2')
+        # conv3_3
+        input_shape33=pycnnl.IntVector(4)
+        input_shape33[0]=1
+        input_shape33[1]=256
+        input_shape33[2]=56
+        input_shape33[3]=56
+        self.net.createConvLayer('conv3_3',input_shape33, 256, 3, 1, 1, 1)
+        # relu3_3
+        self.net.createReLuLayer('relu3_3')
+
+        # conv3_4
+        input_shape34 = pycnnl.IntVector(4)
+        input_shape34[0] = 1
+        input_shape34[1] = 256
+        input_shape34[2] = 56
+        input_shape34[3] = 56
+        self.net.createConvLayer('conv3_4', input_shape34, 256, 3, 1, 1, 1)
+
+        # relu3_4
+        self.net.createReLuLayer('relu3_4')
+
+        # pool3
+        input_shape3_pool = pycnnl.IntVector(4)
+        input_shape3_pool[0] = 1
+        input_shape3_pool[1] = 256
+        input_shape3_pool[2] = 56
+        input_shape3_pool[3] = 56
+        self.net.createPoolingLayer('pool3', input_shape3_pool, 2, 2)
+
+        # conv4_1
+        input_shape4 = pycnnl.IntVector(4)
+        input_shape4[0] = 1
+        input_shape4[1] = 256
+        input_shape4[2] = 28
+        input_shape4[3] = 28
+        self.net.createConvLayer('conv4_1', input_shape4, 512, 3, 1, 1, 1)
+
+        # relu4_1
+        self.net.createReLuLayer('relu4_1')
+
+        # conv4_2
+        input_shape42 = pycnnl.IntVector(4)
+        input_shape42[0] = 1
+        input_shape42[1] = 512
+        input_shape42[2] = 28
+        input_shape42[3] = 28
+        self.net.createConvLayer('conv4_2', input_shape42, 512, 3, 1, 1, 1)
+
+        # relu4_2
+        self.net.createReLuLayer('relu4_2')
+
+        # conv4_3
+        input_shape43 = pycnnl.IntVector(4)
+        input_shape43[0] = 1
+        input_shape43[1] = 512
+        input_shape43[2] = 28
+        input_shape43[3] = 28
+        self.net.createConvLayer('conv4_3', input_shape43, 512, 3, 1, 1, 1)
+
+        # relu4_3
+        self.net.createReLuLayer('relu4_3')
+
+        # conv4_4
+        input_shape44 = pycnnl.IntVector(4)
+        input_shape44[0] = 1
+        input_shape44[1] = 512
+        input_shape44[2] = 28
+        input_shape44[3] = 28
+        self.net.createConvLayer('conv4_4', input_shape44, 512, 3, 1, 1, 1)
+
+        # relu4_4
+        self.net.createReLuLayer('relu4_4')
+
+        # pool4
+        input_shape4_pool = pycnnl.IntVector(4)
+        input_shape4_pool[0] = 1
+        input_shape4_pool[1] = 512
+        input_shape4_pool[2] = 28
+        input_shape4_pool[3] = 28
+        self.net.createPoolingLayer('pool4', input_shape4_pool, 2, 2)
+
+        # conv5_1
+        input_shape5 = pycnnl.IntVector(4)
+        input_shape5[0] = 1
+        input_shape5[1] = 512
+        input_shape5[2] = 14
+        input_shape5[3] = 14
+        self.net.createConvLayer('conv5_1', input_shape5, 512, 3, 1, 1, 1)
+
+        # relu5_1
+        self.net.createReLuLayer('relu5_1')
+
+        # conv5_2
+        input_shape52 = pycnnl.IntVector(4)
+        input_shape52[0] = 1
+        input_shape52[1] = 512
+        input_shape52[2] = 14
+        input_shape52[3] = 14
+        self.net.createConvLayer('conv5_2', input_shape52, 512, 3, 1, 1, 1)
+
+        # relu5_2
+        self.net.createReLuLayer('relu5_2')
+
+        # conv5_3
+        input_shape53 = pycnnl.IntVector(4)
+        input_shape53[0] = 1
+        input_shape53[1] = 512
+        input_shape53[2] = 14
+        input_shape53[3] = 14
+        self.net.createConvLayer('conv5_3', input_shape53, 512, 3, 1, 1, 1)
+
+        # relu5_3
+        self.net.createReLuLayer('relu5_3')
+
+        # conv5_4
+        input_shape54 = pycnnl.IntVector(4)
+        input_shape54[0] = 1
+        input_shape54[1] = 512
+        input_shape54[2] = 14
+        input_shape54[3] = 14
+        self.net.createConvLayer('conv5_4', input_shape54, 512, 3, 1, 1, 1)
+
+        # relu5_4
+        self.net.createReLuLayer('relu5_4')
+
+        # pool5
+        input_shape5_pool = pycnnl.IntVector(4)
+        input_shape5_pool[0] = 1
+        input_shape5_pool[1] = 512
+        input_shape5_pool[2] = 14
+        input_shape5_pool[3] = 14
+        self.net.createPoolingLayer('pool5', input_shape5_pool, 2, 2)
+
+        # fc6
+        input_shape_fc6 = pycnnl.IntVector(4)
+        input_shape_fc6[0] = 1
+        input_shape_fc6[1] = 1
+        input_shape_fc6[2] = 1
+        input_shape_fc6[3] = 25088
+        weight_shape_fc6 = pycnnl.IntVector(4)
+        weight_shape_fc6[0] = 1
+        weight_shape_fc6[1] = 1
+        weight_shape_fc6[2] = 25088
+        weight_shape_fc6[3] = 4096
+        output_shape_fc6 = pycnnl.IntVector(4)
+        output_shape_fc6[0] = 1
+        output_shape_fc6[1] = 1
+        output_shape_fc6[2] = 1
+        output_shape_fc6[3] = 4096
+        self.net.createMlpLayer('fc6', input_shape_fc6, weight_shape_fc6, output_shape_fc6)
+
+        # relu6
+        self.net.createReLuLayer('relu6')
+
+        # fc7
+        input_shape_fc7 = pycnnl.IntVector(4)
+        input_shape_fc7[0] = 1
+        input_shape_fc7[1] = 1
+        input_shape_fc7[2] = 1
+        input_shape_fc7[3] = 4096
+        weight_shape_fc7 = pycnnl.IntVector(4)
+        weight_shape_fc7[0] = 1
+        weight_shape_fc7[1] = 1
+        weight_shape_fc7[2] = 4096
+        weight_shape_fc7[3] = 4096
+        output_shape_fc7 = pycnnl.IntVector(4)
+        output_shape_fc7[0] = 1
+        output_shape_fc7[1] = 1
+        output_shape_fc7[2] = 1
+        output_shape_fc7[3] = 4096
+        self.net.createMlpLayer('fc7', input_shape_fc7, weight_shape_fc7, output_shape_fc7)
+
+        # relu7
+        self.net.createReLuLayer('relu7')
+
         # fc8
-        
+
         input_shapem3=pycnnl.IntVector(4)
         input_shapem3[0]=1
         input_shapem3[1]=1
@@ -65,24 +290,24 @@ class VGG19(object):
         output_shapem3[3]=1000
 
         self.net.createMlpLayer('fc8', input_shapem3,weight_shapem3,output_shapem3)
-        
+
         # softmax
-        
+
         input_shapes=pycnnl.IntVector(3)
         input_shapes[0]=1
         input_shapes[1]=1
         input_shapes[2]=1000
-    
+
 
         self.net.createSoftmaxLayer('softmax',input_shapes ,1)
-    
+
     def load_model(self):
-        # loading params ... 
+        # loading params ...
         print('Loading parameters from file ' + self.param_path)
         params = scipy.io.loadmat(self.param_path)
         self.image_mean = params['normalization'][0][0][0]
         self.image_mean = np.mean(self.image_mean, axis=(0, 1))
-        
+
         count = 0
         for idx in range(self.net.size()):
             if 'conv' in self.net.getLayerName(idx):
@@ -90,18 +315,18 @@ class VGG19(object):
                 # TODO：调整权重形状
                 # matconvnet: weights dim [height, width, in_channel, out_channel]
                 # ours: weights dim [out_channel, height, width,in_channel]
-                weight = ______________________________
+                weight = np.transpose(weight, [3, 0, 1, 2]).flatten().astype(np.float)
                 bias = bias.reshape(-1).astype(np.float)
                 self.net.loadParams(idx, weight, bias)
                 count += 1
             if 'fc' in self.net.getLayerName(idx):
                 # Loading params may take quite a while. Please be patient.
                 weight, bias = params['layers'][0][idx][0][0][0][0]
-               
+
                 weight = weight.reshape([weight.shape[0]*weight.shape[1]*weight.shape[2], weight.shape[3]])
-                weight = _______________________________
+                weight = weight.flatten().astype(np.float)
                 bias = bias.reshape(-1).astype(np.float)
-            
+
                 self.net.loadParams(idx, weight, bias)
                 count += 1
 
@@ -117,13 +342,13 @@ class VGG19(object):
         input_image = np.reshape(input_image, [1]+list(input_image.shape))
         # input dim [N, height, width, channel] 2
         # TODO：调整输入数据
-        input_data = ________________________
-        
+        input_data = input_image.flatten().astype(np.float)
+
         self.net.setInputData(input_data)
 
     def forward(self):
         return self.net.forward()
-    
+
     def get_top5(self, label):
         start = time.time()
         self.forward()
@@ -152,7 +377,7 @@ class VGG19(object):
 
         print('inference time: %f'%(end - start))
         return top1,top5
-    
+
     def evaluate(self, file_list):
         top1_num = 0
         top5_num = 0
