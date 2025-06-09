@@ -1,12 +1,17 @@
 import torch
 import torch_mlu
 #TODO: 从 transformers 库中导入 pipeline
-_______________________________________________________
+from transformers import pipeline
 model_id = "/workspace/model/favorite/large-scale-models/model-v1/Llama-3.2-3B/"
 #TODO: 创建一个文本生成的管道，指定任务类型、模型路径、数据类型，并在MLU设备上运行
-pipe = _______________________________________________________
+pipe = pipeline(
+    task="text-generation",
+    model=model_id,
+    torch_dtype=torch.float16,
+    device="mlu"
+)
 #TODO：使用管道对象执行文本生成任务，传入提示词"The key to life is"
-output = _______________________________________________________
+output = pipe("The key to life is")[0]
 # 打印生成的文本结果，提取输出字典中的 'generated_text' 字段
-_______________________________________________________
+print(output['generated_text'])
 print("Llama3.2 textchat PASS!")
