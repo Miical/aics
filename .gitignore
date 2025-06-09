@@ -1,3 +1,6 @@
+stable_diffusion/
+codellama/
+LaTeX_OCR/
 *.npy
 core.*
 *.zip
