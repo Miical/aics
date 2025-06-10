@@ -1,2 +1,1 @@
-#TODO:执行推理任务，并指定实际的模型检查点(latex-ocr-print数据集上微调后得到的LoRA 权重)存储路径
-______________________________--ckpt_dir ________________________________
+swift infer --ckpt_dir /workspace/volume/lab/aics/labs/code_chap_8_opt_student/llama3.2/output/llama3_2-3b/v0-20250610-002353/checkpoint-10
